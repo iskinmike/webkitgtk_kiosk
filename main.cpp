@@ -87,11 +87,10 @@ int main(int argc, char* argv[])
   GdkGeometry geom;
   geom.min_width = 600;
   geom.min_height = 400;
-  geom.max_width = 1200;
-  geom.max_height = 1200;
+  geom.max_width = 1366;
+  geom.max_height = 755;
 
 //  GdkWindowHints  GDK_HINT_MIN_SIZE | GDK_HINT_MAX_SIZE
-
   gtk_window_set_geometry_hints(GTK_WINDOW(main_window), NULL, &geom, GDK_HINT_MAX_SIZE);
   gtk_window_set_resizable(GTK_WINDOW(main_window), TRUE);
 
@@ -114,22 +113,16 @@ int main(int argc, char* argv[])
   g_signal_connect(main_window, "destroy", G_CALLBACK(destroyWindowCb), NULL);
   g_signal_connect(webView, "close", G_CALLBACK(closeWebViewCb), main_window);
 
+
+  WebKitSettings* settings = webkit_web_view_get_settings(webView);
+  webkit_settings_set_enable_write_console_messages_to_stdout(settings, TRUE);
+  webkit_web_view_set_settings(webView, settings);
+
   // Load a web page into the browser instance
-  webkit_web_view_load_uri(webView, "http://www.webkitgtk.org/");
+  webkit_web_view_load_uri(webView, "http://localhost:8080/");
 
   WebKitWindowProperties* window_properties = webkit_web_view_get_window_properties(webView);
-//  g_signal_connect (window_properties, "notify::geometry",
-//                    G_CALLBACK (window_geometry_changed), window);
-//  g_signal_connect (window_properties, "notify::toolbar-visible",
-//                    G_CALLBACK (window_toolbar_visibility_changed), window);
-//  g_signal_connect (window_properties, "notify::menubar-visible",
-//                    G_CALLBACK (window_menubar_visibility_changed), window);
 
-  /* Apply the window properties before showing the window */
-//  visible = webkit_window_properties_get_toolbar_visible (window_properties);
-//  browser_window_set_toolbar_visible (BROWSER_WINDOW (window), visible);
-//  visible = webkit_window_properties_get_menubar_visible (window_properties);
-//  browser_window_set_menubar_visible (BROWSER_WINDOW (window), visible);
   printf("Is toolbar_visible '%d'\n", webkit_window_properties_get_toolbar_visible(window_properties));
   printf("Is menubar_visible    '%d'\n", webkit_window_properties_get_menubar_visible(window_properties));
   GdkRectangle rect;
@@ -141,8 +134,6 @@ int main(int argc, char* argv[])
   // Make sure that when the browser area becomes visible, it will get mouse
   // and keyboard events
   gtk_widget_grab_focus(GTK_WIDGET(webView));
-
-//  gtk_widget_set_size_request(GTK_WIDGET(webView), 640, 480);
 
   // Make sure the main window and all its contents are visible
   gtk_widget_show_all(main_window);

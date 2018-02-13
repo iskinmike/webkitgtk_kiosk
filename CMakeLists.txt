@@ -5,19 +5,22 @@
 cmake_minimum_required (VERSION 2.6)
 project(webkit_test)
 
+set ( PLATFORM_INCLUDE "/usr/lib/x86_64-linux-gnu/glib-2.0/include/")
+
+if(EXISTS "/etc/redhat-release")
+     set ( PLATFORM_INCLUDE "/usr/lib64/glib-2.0/include/")
+
+
 set(HEADERS_DIRS 
   "/usr/include/gtk-3.0/"
   "/usr/include/webkitgtk-4.0/"
   "/usr/include/glib-2.0/"
-  "/usr/lib/x86_64-linux-gnu/glib-2.0/include/"
   "/usr/include/pango-1.0/"
   "/usr/include/gdk-pixbuf-2.0/"
   "/usr/include/cairo/"
   "/usr/include/atk-1.0/"
-  "/usr/include/libsoup-2.4/")
-
-set(LIBS_DIRS 
-  "/usr/lib/x86_64-linux-gnu/")
+  "/usr/include/libsoup-2.4/"
+  ${PLATFORM_INCLUDE})
 
 set(LIBS 
   gtk-3 
@@ -27,9 +30,7 @@ set(LIBS
 
 
 include_directories("./" ${HEADERS_DIRS})
-link_directories(${LIBS_DIRS})
 link_libraries(${LIBS})
-# add_library(${LIBS_DIRS})
 
 set(webkit_test_SOURCES "main.cpp")
 add_executable(webkit_test ${webkit_test_SOURCES})
