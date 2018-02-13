@@ -9,7 +9,7 @@ set ( PLATFORM_INCLUDE "/usr/lib/x86_64-linux-gnu/glib-2.0/include/")
 
 if(EXISTS "/etc/redhat-release")
      set ( PLATFORM_INCLUDE "/usr/lib64/glib-2.0/include/")
-
+endif(EXISTS "/etc/redhat-release")
 
 set(HEADERS_DIRS 
   "/usr/include/gtk-3.0/"
