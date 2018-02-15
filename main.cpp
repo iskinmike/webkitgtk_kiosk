@@ -1,7 +1,3 @@
-
-
-//#include <QCoreApplication>
-
 #include <gtk/gtk.h>
 #include <webkit2/webkit2.h>
 #include <gdk/gdkkeysyms.h>
@@ -9,70 +5,38 @@
 static void destroyWindowCb(GtkWidget* widget, GtkWidget* window);
 static gboolean closeWebViewCb(WebKitWebView* webView, GtkWidget* window);
 
-
-GtkWidget *main_window;
-GtkWidget *view_widget;
-WebKitWebView *webView;
+const int display_width = 1366;
+const int display_height = 755;
 bool fullscreen_state = true;
 
-void swichFullscreenMode(){
-
-//    printf("Is toplevel   '%d'\n", gtk_widget_is_toplevel(view_widget));
-//    printf("Is sensitive  '%d'\n", gtk_widget_is_sensitive(view_widget));
-//    printf("Is focus      '%d'\n", gtk_widget_is_focus(view_widget));
-//    printf("Is composited '%d'\n", gtk_widget_is_composited(view_widget));
-//    printf("Is visible    '%d'\n", gtk_widget_is_visible(view_widget));
-//    printf("Is resizble   '%d'\n", gtk_window_get_resizable(GTK_WINDOW(main_window)));
-
-//    webView
-
-//     WebKitWindowProperties* props = webkit_web_view_get_window_properties(webView);
-//     props
-//     WebKitWebWindowFeatures* features = webkit_web_view_get_window_features(webView);
-//     features->;
-//     WebKitWebWindowFeatures test;
-
-
-
+void swichFullscreenMode(GtkWidget *widget){
     if (fullscreen_state) {
         printf("Set sized\n");
-        gtk_window_unfullscreen(GTK_WINDOW(main_window));
-//        gtk_window_unmaximize(GTK_WINDOW(main_window));
-//        gtk_window_set_default_size(GTK_WINDOW(main_window), 800, 600);
-//        gtk_widget_set_size_request(GTK_WIDGET(webView), 640, 480);
+        gtk_window_unfullscreen(GTK_WINDOW(widget));
     } else {
         printf("Set fullscreen\n");
-//        gtk_window_maximize(GTK_WINDOW(main_window));
-        gtk_window_fullscreen(GTK_WINDOW(main_window));
-        // Make sure the main window and all its contents are visible
-//        gtk_widget_show_all(main_window);
+        gtk_window_fullscreen(GTK_WINDOW(widget));
     }
     fullscreen_state = !fullscreen_state;
     printf("fullscreeen state: '%s'\n", (fullscreen_state) ? "true" : "false" );
 }
 
-
-gboolean on_key_press(GtkWidget *widget, GdkEventKey *event, gpointer user_data)
+gboolean on_key_release(GtkWidget *widget, GdkEventKey *event, gpointer user_data)
 {
+  // suppress warnings
+  (void) widget;
+  (void) user_data;
+  // nadle reys
   switch (event->keyval)
   {
     case GDK_KEY_p:
       printf("key release: %s\n", "p");
-      swichFullscreenMode();
+      swichFullscreenMode(widget);
       break;
     default:
       return FALSE;
   }
-
   return TRUE;
-}
-
-
-gboolean on_window_state_event (GtkWidget *widget, GdkEvent *event, gpointer user_data){
-
-//    event-
-    printf("State changes: %s\n", "*************************");
-    return FALSE;
 }
 
 int main(int argc, char* argv[])
@@ -80,25 +44,21 @@ int main(int argc, char* argv[])
   // Initialize GTK+
   gtk_init(&argc, &argv);
 
-  // Create an 800x600 window that will contain the browser instance
-  main_window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
-  gtk_window_set_default_size(GTK_WINDOW(main_window), 800, 600);
+  // Create window that will contain the browser instance
+  GtkWidget* main_window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
+  gtk_window_set_default_size(GTK_WINDOW(main_window), display_width, display_height);
 
+  // Define max geometry of window
   GdkGeometry geom;
-  geom.min_width = 600;
-  geom.min_height = 400;
-  geom.max_width = 1366;
-  geom.max_height = 755;
+  geom.max_width = display_width;
+  geom.max_height = display_height;
 
 //  GdkWindowHints  GDK_HINT_MIN_SIZE | GDK_HINT_MAX_SIZE
   gtk_window_set_geometry_hints(GTK_WINDOW(main_window), NULL, &geom, GDK_HINT_MAX_SIZE);
   gtk_window_set_resizable(GTK_WINDOW(main_window), TRUE);
 
-//  gtk_window_set_
-  view_widget = webkit_web_view_new();
-
   // Create a browser instance
-  webView = WEBKIT_WEB_VIEW(view_widget);
+  WebKitWebView* webView = WEBKIT_WEB_VIEW(webkit_web_view_new());
 
   // Put the browser area into the main window
   gtk_container_add(GTK_CONTAINER(main_window), GTK_WIDGET(webView));
@@ -107,12 +67,9 @@ int main(int argc, char* argv[])
 
   // Set up callbacks so that if either the main window or the browser instance is
   // closed, the program will exit
-
-  g_signal_connect(main_window, "window-state-event", G_CALLBACK(on_window_state_event), NULL);
-  g_signal_connect(main_window, "key_release_event", G_CALLBACK(on_key_press), NULL);
+  g_signal_connect(main_window, "key_release_event", G_CALLBACK(on_key_release), NULL);
   g_signal_connect(main_window, "destroy", G_CALLBACK(destroyWindowCb), NULL);
   g_signal_connect(webView, "close", G_CALLBACK(closeWebViewCb), main_window);
-
 
   WebKitSettings* settings = webkit_web_view_get_settings(webView);
   webkit_settings_set_enable_write_console_messages_to_stdout(settings, TRUE);
@@ -120,16 +77,6 @@ int main(int argc, char* argv[])
 
   // Load a web page into the browser instance
   webkit_web_view_load_uri(webView, "http://localhost:8080/");
-
-  WebKitWindowProperties* window_properties = webkit_web_view_get_window_properties(webView);
-
-  printf("Is toolbar_visible '%d'\n", webkit_window_properties_get_toolbar_visible(window_properties));
-  printf("Is menubar_visible    '%d'\n", webkit_window_properties_get_menubar_visible(window_properties));
-  GdkRectangle rect;
-  webkit_window_properties_get_geometry(window_properties, &rect);
-
-  printf("max_width:  '%d'\n", rect.width  );
-  printf("max_height: '%d'\n", rect.height );
 
   // Make sure that when the browser area becomes visible, it will get mouse
   // and keyboard events
@@ -147,11 +94,16 @@ int main(int argc, char* argv[])
 
 static void destroyWindowCb(GtkWidget* widget, GtkWidget* window)
 {
+  // suppress warnings
+  (void) widget;
+  (void) window;
   gtk_main_quit();
 }
 
 static gboolean closeWebViewCb(WebKitWebView* webView, GtkWidget* window)
 {
+  // suppress warnings
+  (void) webView;
   gtk_widget_destroy(window);
   return TRUE;
 }
