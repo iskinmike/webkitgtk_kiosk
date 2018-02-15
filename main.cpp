@@ -6,9 +6,9 @@
 static void destroyWindowCb(GtkWidget* widget, GtkWidget* window);
 static gboolean closeWebViewCb(WebKitWebView* webView, GtkWidget* window);
 
-const int display_width = 1366;
-const int display_height = 765;
-const int offset = 200;
+const int display_width = 1200;
+const int display_height = 600;
+
 bool fullscreen_state = true;
 
 Display* d = XOpenDisplay(NULL);
@@ -20,8 +20,8 @@ void swichFullscreenMode(GtkWidget *widget){
         printf("Set sized\n");
         gtk_window_unfullscreen(GTK_WINDOW(widget));
         // set window size
-        geom.max_width = display_width - offset;
-        geom.max_height = display_height - offset;
+        geom.max_width = display_width;
+        geom.max_height = display_height;
     } else {
         printf("Set fullscreen\n");
         gtk_window_fullscreen(GTK_WINDOW(widget));
@@ -56,9 +56,6 @@ int main(int argc, char* argv[])
 {
   // Initialize GTK+
   gtk_init(&argc, &argv);
-
-//  display_width = s->width;
-//  display_height = s->height;
 
   // Create window that will contain the browser instance
   GtkWidget* main_window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
