@@ -26,7 +26,8 @@ set(LIBS
   gtk-3 
   webkit2gtk-4.0 
   glib-2.0 
-  gobject-2.0)
+  gobject-2.0
+  X11)
 
 
 include_directories("./" ${HEADERS_DIRS})
