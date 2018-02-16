@@ -13,7 +13,7 @@ endif(EXISTS "/etc/redhat-release")
 
 set(HEADERS_DIRS 
   "/usr/include/gtk-3.0/"
-  "/usr/include/webkitgtk-4.0/"
+  "/usr/include/webkitgtk-3.0/"
   "/usr/include/glib-2.0/"
   "/usr/include/pango-1.0/"
   "/usr/include/gdk-pixbuf-2.0/"
@@ -24,7 +24,7 @@ set(HEADERS_DIRS
 
 set(LIBS 
   gtk-3 
-  webkit2gtk-4.0 
+  webkitgtk-3.0 
   glib-2.0 
   gobject-2.0
   X11)
