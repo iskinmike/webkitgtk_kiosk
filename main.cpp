@@ -42,7 +42,9 @@ void swichFullscreenMode(GtkWidget *widget){
 gboolean console_message_handler(WebKitWebView *web_view, gchar *message,
         gint line, gchar *source_id, gpointer user_data)
 {
-    printf("[CONSOLE LOG]: '%s', [Line '%d'], [Source '%s'], [Pointer: %x]", message, line, source_id, web_view);
+    (void) user_data;
+    printf("[CONSOLE LOG]: '%s', [Line '%d']\n[Source '%s'], [Pointer: %p]\n",
+            message, line, source_id, web_view);
 }
 
 gboolean on_key_release(GtkWidget *widget, GdkEventKey *event, gpointer user_data)
@@ -86,7 +88,7 @@ int main(int argc, char* argv[])
   // Set up callbacks so that if either the main window or the browser instance is
   // closed, the program will exit
   g_signal_connect(main_window, "key_release_event", G_CALLBACK(on_key_release), NULL);
-  g_signal_connect(main_window, "console-message", G_CALLBACK(console_message_handler), NULL);
+  g_signal_connect(webView, "console-message", G_CALLBACK(console_message_handler), NULL);
   g_signal_connect(main_window, "destroy", G_CALLBACK(destroyWindowCb), NULL);
   g_signal_connect(webView, "close", G_CALLBACK(closeWebViewCb), main_window);
 
